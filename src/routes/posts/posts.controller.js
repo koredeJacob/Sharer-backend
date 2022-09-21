@@ -3,7 +3,9 @@ const {
 	AddNewPost,
 	getOnePost,
 	deletePost,
-	updateLikes
+	updateLikes,
+	removeComment,
+	addComment
 } = require('../../models/posts.model')
 
 async function httpGetAllPosts(req, res) {
@@ -41,12 +43,13 @@ async function httpGetPostById(req, res) {
 
 async function httpDeletePost(req, res) {
 	const { id } = req.params
+	const { userID } = req.body
 	if (isNaN(id)) {
 		return res.status(400).json({
 			error: 'invalid id'
 		})
 	}
-	const deletedpost = await deletePost(Number(id))
+	const deletedpost = await deletePost(Number(id), userID)
 	if (deletedpost.deletedCount < 1) {
 		return res.status(404).json({
 			error: 'post not found'
@@ -71,9 +74,43 @@ async function httpUpdateLikes(req, res) {
 			error: 'post not found'
 		})
 	}
-	return res.status(200).json({
-		message: 'post likes updated'
-	})
+	return res.status(200).json(post)
+}
+
+async function httpRemoveComment(req, res) {
+	const { userID, comment } = req.body
+	const { id } = req.params
+
+	if (isNaN(id)) {
+		return res.status(400).json({
+			error: 'invalid id'
+		})
+	}
+	const deletecomment = await removeComment(userID, comment, Number(id))
+	if (!deletecomment) {
+		return res.status(404).json({
+			error: 'post not found'
+		})
+	}
+	return res.status(200).json(deletecomment)
+}
+
+async function httpAddComment(req, res) {
+	const { userID, comment } = req.body
+	const { id } = req.params
+
+	if (isNaN(id)) {
+		return res.status(400).json({
+			error: 'invalid id'
+		})
+	}
+	const addcomment = await addComment(userID, comment, Number(id))
+	if (!addcomment) {
+		return res.status(404).json({
+			error: 'post not found'
+		})
+	}
+	return res.status(200).json(addcomment)
 }
 
 module.exports = {
@@ -81,5 +118,6 @@ module.exports = {
 	httpAddNewPost,
 	httpGetPostById,
 	httpDeletePost,
-	httpUpdateLikes
+	httpUpdateLikes,
+	httpRemoveComment
 }

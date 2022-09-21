@@ -4,7 +4,7 @@ const postsSchema = new mongoose.Schema({
 	profilePicture: String,
 	profileName: String,
 	userID: {
-		type: String,
+		type: Number,
 		required: true
 	},
 	postTitle: {
@@ -19,11 +19,11 @@ const postsSchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
-	likes: [String],
+	likes: [Number],
 	comments: [
 		{
 			userID: {
-				type: String,
+				type: Number,
 				required: true
 			},
 			comment: {

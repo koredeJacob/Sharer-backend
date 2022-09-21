@@ -1,4 +1,3 @@
-const { updateOne } = require('./posts.mongo')
 const postsDatabase = require('./posts.mongo')
 
 async function getAllPosts() {
@@ -40,8 +39,8 @@ async function getOnePost(id) {
 	return post
 }
 
-async function deletePost(id) {
-	const post = await postsDatabase.deleteOne({ postId: id })
+async function deletePost(id, userid) {
+	const post = await postsDatabase.deleteOne({ postId: id, userID: userid })
 	return post
 }
 
@@ -57,8 +56,51 @@ async function updateLikes(id, user) {
 		likeSet.add(user)
 	}
 	const updatedLikes = [...likeSet]
-	const updatedPost = await postsDatabase.updateOne({ postId: id }, { likes: updatedLikes })
+	const updatedPost = await postsDatabase.findOneAndUpdate(
+		{ postId: id },
+		{ likes: updatedLikes },
+		{ new: true }
+	)
 	return updatedPost
 }
 
-module.exports = { getAllPosts, AddNewPost, getOnePost, deletePost, updateLikes }
+async function removeComment(userid, comment, id) {
+	const post = await postsDatabase.findOne({ postId: id }, { comments: 1 })
+	if (!post) {
+		return null
+	}
+	const newcomment = post.comments.filter((item) => {
+		return item.userID !== userid && item.comment === comment
+	})
+	const newpost = await postsDatabase.findOneAndUpdate(
+		{ postId: id },
+		{ comments: newcomment },
+		{ new: true }
+	)
+	return newpost
+}
+
+async function addComment(userid, comment, id) {
+	const post = await postsDatabase.findOne({ postId: id }, { comments: 1 })
+	if (!post) {
+		return null
+	}
+	newcomment = post.comments
+	newcomment.push({ userID: userid, comment: comment })
+	const newpost = await postsDatabase.findOneAndUpdate(
+		{ postId: id },
+		{ comments: newcomment },
+		{ new: true }
+	)
+	return newpost
+}
+
+module.exports = {
+	getAllPosts,
+	AddNewPost,
+	getOnePost,
+	deletePost,
+	updateLikes,
+	removeComment,
+	addComment
+}
