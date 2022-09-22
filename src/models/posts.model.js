@@ -64,14 +64,15 @@ async function updateLikes(id, user) {
 	return updatedPost
 }
 
-async function removeComment(userid, comment, id) {
+async function removeComment(commentid, id) {
 	const post = await postsDatabase.findOne({ postId: id }, { comments: 1 })
 	if (!post) {
 		return null
 	}
 	const newcomment = post.comments.filter((item) => {
-		return item.userID !== userid && item.comment === comment
+		return commentid !== item._id.toString()
 	})
+	console.log(newcomment)
 	const newpost = await postsDatabase.findOneAndUpdate(
 		{ postId: id },
 		{ comments: newcomment },

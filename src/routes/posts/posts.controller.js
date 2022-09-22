@@ -78,7 +78,7 @@ async function httpUpdateLikes(req, res) {
 }
 
 async function httpRemoveComment(req, res) {
-	const { userID, comment } = req.body
+	const { commentid } = req.body
 	const { id } = req.params
 
 	if (isNaN(id)) {
@@ -86,7 +86,7 @@ async function httpRemoveComment(req, res) {
 			error: 'invalid id'
 		})
 	}
-	const deletecomment = await removeComment(userID, comment, Number(id))
+	const deletecomment = await removeComment(commentid, Number(id))
 	if (!deletecomment) {
 		return res.status(404).json({
 			error: 'post not found'
@@ -119,5 +119,6 @@ module.exports = {
 	httpGetPostById,
 	httpDeletePost,
 	httpUpdateLikes,
-	httpRemoveComment
+	httpRemoveComment,
+	httpAddComment
 }
