@@ -13,7 +13,7 @@ const usersSchema = new mongoose.Schema({
 		type: String,
 		required: true
 	},
-	name: {
+	profileName: {
 		type: String,
 		required: true
 	}

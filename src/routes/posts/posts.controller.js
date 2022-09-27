@@ -15,13 +15,14 @@ async function httpGetAllPosts(req, res) {
 
 async function httpAddNewPost(req, res) {
 	const postdata = req.body
-	if (!postdata.postContent || !postdata.postTitle || !postdata.userID) {
+	const user = req.user
+	if (!postdata.postContent || !postdata.postTitle) {
 		return res.status(400).json({
 			error: 'missing required property'
 		})
 	}
 
-	const addpost = await AddNewPost(postdata)
+	const addpost = await AddNewPost(postdata, user)
 	return res.status(201).json(addpost)
 }
 
@@ -43,32 +44,30 @@ async function httpGetPostById(req, res) {
 
 async function httpDeletePost(req, res) {
 	const { id } = req.params
-	const { userID } = req.body
+	const googleId = req.user
 	if (isNaN(id)) {
 		return res.status(400).json({
 			error: 'invalid id'
 		})
 	}
-	const deletedpost = await deletePost(Number(id), userID)
+	const deletedpost = await deletePost(Number(id), googleId)
 	if (deletedpost.deletedCount < 1) {
 		return res.status(404).json({
 			error: 'post not found'
 		})
 	}
-	return res.status(200).json({
-		message: 'deleted post'
-	})
+	return res.status(200).json(deletedpost)
 }
 
 async function httpUpdateLikes(req, res) {
 	const { id } = req.params
-	const { userID } = req.body
+	const googleId = req.user
 	if (isNaN(id)) {
 		return res.status(400).json({
 			error: 'invalid id'
 		})
 	}
-	const post = await updateLikes(Number(id), userID)
+	const post = await updateLikes(Number(id), googleId)
 	if (!post) {
 		return res.status(404).json({
 			error: 'post not found'
@@ -96,15 +95,16 @@ async function httpRemoveComment(req, res) {
 }
 
 async function httpAddComment(req, res) {
-	const { userID, comment } = req.body
+	const { comment } = req.body
 	const { id } = req.params
+	const googleId = req.user
 
 	if (isNaN(id)) {
 		return res.status(400).json({
 			error: 'invalid id'
 		})
 	}
-	const addcomment = await addComment(userID, comment, Number(id))
+	const addcomment = await addComment(googleId, comment, Number(id))
 	if (!addcomment) {
 		return res.status(404).json({
 			error: 'post not found'

@@ -4,6 +4,7 @@ const usersRouter = require('./users/users.router')
 const passport = require('passport')
 const { Strategy } = require('passport-google-oauth20')
 const cookiesession = require('cookie-session')
+const { createUser, getOneUser } = require('../models/users.model')
 
 const api = express.Router()
 
@@ -20,8 +21,8 @@ const AUTH_OPTIONS = {
 	clientSecret: config.CLIENT_SECRET
 }
 
-function verifycallback(accessToken, refreshToken, profile, done) {
-	console.log('google profile ', profile, ' k1 ', accessToken)
+async function verifycallback(accessToken, refreshToken, profile, done) {
+	const currentuser = await createUser(profile.id, profile.displayName, profile.photos[0].value)
 	done(null, profile)
 }
 
@@ -37,7 +38,7 @@ passport.use(new Strategy(AUTH_OPTIONS, verifycallback))
 api.use(
 	cookiesession({
 		name: 'session',
-		maxAge: 24 * 60 * 60 * 1000,
+		maxAge: 60 * 24 * 60 * 60 * 1000,
 		keys: [config.COOKIE_KEY_1, config.COOKIE_KEY_2]
 	})
 )
@@ -64,10 +65,7 @@ api.get(
 		failureRedirect: '/v1/failure',
 		successRedirect: '/v1/success',
 		session: true
-	}),
-	(req, res) => {
-		console.log('got called back fro google')
-	}
+	})
 )
 
 api.get('/auth/logout', (req, res) => {
@@ -79,10 +77,9 @@ api.get('/failure', (req, res) => {
 	return res.status(500).send('failed to log in')
 })
 
-api.get('/success', (req, res) => {
-	return res.status(200).json({
-		id: req.user
-	})
+api.get('/success', async (req, res) => {
+	const userId = await getOneUser(req.user)
+	return res.status(200).json({ userID: userId.userID })
 })
 
 api.use('/users', checkedLoggedin, usersRouter)

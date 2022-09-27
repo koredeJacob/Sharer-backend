@@ -1,8 +1,16 @@
 const express = require('express')
 const path = require('path')
 const api = require('./routes/api')
+const helmet = require('helmet')
 
 const app = express()
+
+app.use(helmet())
+
+app.use((req, res, next) => {
+	res.set('Access-Control-Allow-Origin', 'http://localhost:3000')
+	next()
+})
 
 app.use(express.json())
 

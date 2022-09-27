@@ -1,4 +1,5 @@
 const postsDatabase = require('./posts.mongo')
+const { getOneUser } = require('./users.model')
 
 async function getAllPosts() {
 	const allposts = await postsDatabase.find({}, { _id: 0, __v: 0 }).sort('-postId')
@@ -14,12 +15,13 @@ async function getLatestPostId() {
 	return latestPost.postId
 }
 
-async function AddNewPost(post) {
+async function AddNewPost(post, user) {
+	const userdetails = await getOneUser(user)
 	const latestPostId = await getLatestPostId()
 	newPost = {
-		userID: post.userID,
-		profileName: post.profileName,
-		profilePicture: post.profilePicture,
+		userID: userdetails.userID,
+		profileName: userdetails.profileName,
+		profilePicture: userdetails.profilePicture,
 		postTitle: post.postTitle,
 		postContent: post.postContent,
 		postId: latestPostId + 1,
@@ -39,13 +41,17 @@ async function getOnePost(id) {
 	return post
 }
 
-async function deletePost(id, userid) {
+async function deletePost(id, googleId) {
+	const userdetails = await getOneUser(googleId)
+	const userid = userdetails.userID
 	const post = await postsDatabase.deleteOne({ postId: id, userID: userid })
 	return post
 }
 
-async function updateLikes(id, user) {
+async function updateLikes(id, googleId) {
 	const post = await postsDatabase.findOne({ postId: id }, { likes: 1 })
+	const userdetails = await getOneUser(googleId)
+	const user = userdetails.userID
 	if (!post) {
 		return null
 	}
@@ -72,7 +78,6 @@ async function removeComment(commentid, id) {
 	const newcomment = post.comments.filter((item) => {
 		return commentid !== item._id.toString()
 	})
-	console.log(newcomment)
 	const newpost = await postsDatabase.findOneAndUpdate(
 		{ postId: id },
 		{ comments: newcomment },
@@ -81,7 +86,9 @@ async function removeComment(commentid, id) {
 	return newpost
 }
 
-async function addComment(userid, comment, id) {
+async function addComment(googleId, comment, id) {
+	const userdetails = await getOneUser(googleId)
+	userid = userdetails.userID
 	const post = await postsDatabase.findOne({ postId: id }, { comments: 1 })
 	if (!post) {
 		return null
