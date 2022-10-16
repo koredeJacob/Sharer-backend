@@ -19,7 +19,10 @@ async function createUser(id, name, picture) {
 			profilePicture: picture,
 			userID: latestuserId + 1
 		}
-		const newuser = userDatabase.updateOne({ googleId: id }, userdetails, { upsert: true })
+		const newuser = userDatabase.findOneAndUpdate({ googleId: id }, userdetails, {
+			upsert: true,
+			new: true
+		})
 		return newuser
 	}
 	return user

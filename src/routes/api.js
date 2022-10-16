@@ -74,12 +74,14 @@ api.get('/auth/logout', (req, res) => {
 })
 
 api.get('/failure', (req, res) => {
-	return res.status(500).send('failed to log in')
+	console.log('failed')
+	return res.status(500).json({ error: 'failed to log in' })
 })
 
 api.get('/success', async (req, res) => {
-	const userId = await getOneUser(req.user)
-	return res.status(200).json({ userID: userId.userID })
+	const user = await getOneUser(req.user)
+	console.log('success')
+	return res.status(200).json({ userID: user.userID, profilePicture: user.profilePicture })
 })
 
 api.use('/users', checkedLoggedin, usersRouter)
