@@ -8,7 +8,12 @@ async function httpGetAllUsers(req, res) {
 async function httpGetOneUser(req, res) {
 	const id = req.user
 	const user = await getOneUser(id)
+	if (!user) {
+		return res.status(404).json({
+			error: 'user not found'
+		})
+	}
 	return res.status(200).json(user)
 }
 
-module.exports = { httpGetAllUsers }
+module.exports = { httpGetAllUsers, httpGetOneUser }

@@ -81,7 +81,7 @@ api.get('/failure', (req, res) => {
 api.get('/success', async (req, res) => {
 	const user = await getOneUser(req.user)
 	console.log('success')
-	return res.status(200).json({ userID: user.userID, profilePicture: user.profilePicture })
+	return res.status(200).redirect('/')
 })
 
 api.use('/users', checkedLoggedin, usersRouter)

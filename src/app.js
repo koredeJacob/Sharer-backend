@@ -13,7 +13,12 @@ app.use((req, res, next) => {
 
 app.use(morgan('combined'))
 
-app.use(helmet())
+app.use(
+	helmet({
+		contentSecurityPolicy: false,
+		crossOriginEmbedderPolicy: false
+	})
+)
 
 app.use(express.json())
 app.use(express.static(path.join(__dirname, '..', 'public')))
