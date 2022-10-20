@@ -23,7 +23,7 @@ async function httpAddNewPost(req, res) {
 	}
 
 	const addpost = await AddNewPost(postdata, user)
-	return res.status(201).json(addpost)
+	return res.status(201).json({ messsage: 'post created successfully' })
 }
 
 async function httpGetPostById(req, res) {
