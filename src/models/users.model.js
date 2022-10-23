@@ -39,4 +39,9 @@ async function getOneUser(id) {
 	return user
 }
 
-module.exports = { createUser, getAllUsers, getOneUser }
+async function getUserById(id) {
+	const user = await userDatabase.findOne({ userID: id }, { __v: 0, _id: 0, googleId: 0 })
+	return user
+}
+
+module.exports = { createUser, getAllUsers, getOneUser, getUserById }

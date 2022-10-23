@@ -88,13 +88,18 @@ async function removeComment(commentid, id) {
 
 async function addComment(googleId, comment, id) {
 	const userdetails = await getOneUser(googleId)
-	userid = userdetails.userID
+	const { userID, profileName, profilePicture } = userdetails
 	const post = await postsDatabase.findOne({ postId: id }, { comments: 1 })
 	if (!post) {
 		return null
 	}
 	newcomment = post.comments
-	newcomment.push({ userID: userid, comment: comment })
+	newcomment.push({
+		userID: userID,
+		comment: comment,
+		userPicture: profilePicture,
+		userName: profileName
+	})
 	const newpost = await postsDatabase.findOneAndUpdate(
 		{ postId: id },
 		{ comments: newcomment },

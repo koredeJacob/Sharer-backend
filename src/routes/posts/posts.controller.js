@@ -56,7 +56,7 @@ async function httpDeletePost(req, res) {
 			error: 'post not found'
 		})
 	}
-	return res.status(200).json(deletedpost)
+	return res.status(204).json(deletedpost)
 }
 
 async function httpUpdateLikes(req, res) {

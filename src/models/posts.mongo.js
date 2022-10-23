@@ -29,6 +29,14 @@ const postsSchema = new mongoose.Schema({
 			comment: {
 				type: String,
 				required: true
+			},
+			userName: {
+				type: String,
+				required: true
+			},
+			userPicture: {
+				type: String,
+				required: true
 			}
 		}
 	],

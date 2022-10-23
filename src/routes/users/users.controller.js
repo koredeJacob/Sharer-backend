@@ -1,4 +1,4 @@
-const { getAllUsers, getOneUser } = require('../../models/users.model')
+const { getAllUsers, getOneUser, getUserById } = require('../../models/users.model')
 
 async function httpGetAllUsers(req, res) {
 	const allUsers = await getAllUsers()
@@ -16,4 +16,15 @@ async function httpGetOneUser(req, res) {
 	return res.status(200).json(user)
 }
 
-module.exports = { httpGetAllUsers, httpGetOneUser }
+async function httpGetUserById(req, res) {
+	const { id } = req.params
+	const user = await getUserById(Number(id))
+	if (!user) {
+		return res.status(404).json({
+			error: 'user not found'
+		})
+	}
+	return res.status(200).json(user)
+}
+
+module.exports = { httpGetAllUsers, httpGetOneUser, httpGetUserById }
