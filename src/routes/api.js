@@ -17,7 +17,7 @@ const config = {
 
 const AUTH_OPTIONS = {
 	// for local enviroment remove https://ideashare.onrender.com and use /v1/auth/google/callback as callbackURL
-	callbackURL: 'https://ideashare.onrender.com/v1/auth/google/callback',
+	callbackURL: 'https://sharer.onrender.com/v1/auth/google/callback',
 	clientID: config.CLIENT_ID,
 	clientSecret: config.CLIENT_SECRET
 }
